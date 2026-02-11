@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- ============================================================
+             Enrollment Reporting: Pivot / Graph
+        ============================================================ -->
+        <record id="view_hr_training_enrollment_pivot" model="ir.ui.view">
+            <field name="name">hr.training.enrollment.pivot</field>
+            <field name="model">hr.training.enrollment</field>
+            <field name="arch" type="xml">
+                <pivot string="Training Enrollments Analysis">
+                    <field name="course_id" type="row"/>
+                    <field name="session_id" type="row"/>
+                    <field name="state" type="col"/>
+                    <field name="request_date" interval="month" type="col"/>
+                    <field name="employee_id" type="row"/>
+                    <field name="company_id" type="row"/>
+
+                    <field name="id" type="measure" string="Enrollments"/>
+                    <field name="score" type="measure" string="Avg. Score"/>
+                </pivot>
+            </field>
+        </record>
+
+        <record id="view_hr_training_enrollment_graph" model="ir.ui.view">
+            <field name="name">hr.training.enrollment.graph</field>
+            <field name="model">hr.training.enrollment</field>
+            <field name="arch" type="xml">
+                <graph string="Training Enrollments" type="bar">
+                    <field name="course_id" type="row"/>
+                    <field name="state" type="col"/>
+                    <field name="id" type="measure" string="Enrollments"/>
+                </graph>
+            </field>
+        </record>
+
+        <record id="action_hr_training_enrollment_reporting" model="ir.actions.act_window">
+            <field name="name">Enrollments Reporting</field>
+            <field name="res_model">hr.training.enrollment</field>
+            <field name="view_mode">pivot,graph,tree</field>
+            <field name="context">{}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Analyze enrollments by course/session, state, and time.
+                </p>
+            </field>
+        </record>
+
+        <!-- ============================================================
+             Certificate Reporting: Pivot / Graph
+        ============================================================ -->
+        <record id="view_hr_training_certificate_pivot" model="ir.ui.view">
+            <field name="name">hr.training.certificate.pivot</field>
+            <field name="model">hr.training.certificate</field>
+            <field name="arch" type="xml">
+                <pivot string="Training Certificates Analysis">
+                    <field name="course_id" type="row"/>
+                    <field name="state" type="col"/>
+                    <field name="issue_date" interval="month" type="col"/>
+                    <field name="employee_id" type="row"/>
+                    <field name="company_id" type="row"/>
+
+                    <field name="id" type="measure" string="Certificates"/>
+                </pivot>
+            </field>
+        </record>
+
+        <record id="view_hr_training_certificate_graph" model="ir.ui.view">
+            <field name="name">hr.training.certificate.graph</field>
+            <field name="model">hr.training.certificate</field>
+            <field name="arch" type="xml">
+                <graph string="Certificates Issued" type="line">
+                    <field name="issue_date" interval="month" type="row"/>
+                    <field name="id" type="measure" string="Certificates"/>
+                    <field name="course_id" type="col"/>
+                </graph>
+            </field>
+        </record>
+
+        <record id="action_hr_training_certificate_reporting" model="ir.actions.act_window">
+            <field name="name">Certificates Reporting</field>
+            <field name="res_model">hr.training.certificate</field>
+            <field name="view_mode">pivot,graph,tree</field>
+            <field name="context">{}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Analyze certificates by course, state, and issue date.
+                </p>
+            </field>
+        </record>
+
+    </data>
+</odoo>

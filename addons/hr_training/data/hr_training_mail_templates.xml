@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- ============================================================
+             Enrollment - Approved (HR Approved)
+        ============================================================ -->
+        <record id="mail_template_hr_training_enrollment_approved" model="mail.template">
+            <field name="name">Training Enrollment Approved</field>
+            <field name="model_id" ref="hr_training.model_hr_training_enrollment"/>
+            <field name="subject">Training Approved: ${object.course_id.name}</field>
+            <field name="email_from">${(user.email_formatted or '')|safe}</field>
+            <field name="email_to">${object.employee_id.work_email or ''}</field>
+            <field name="body_html" type="html">
+                <![CDATA[
+                <p>Hello ${object.employee_id.name},</p>
+                <p>Your enrollment has been <strong>approved</strong>.</p>
+                <ul>
+                    <li><strong>Course:</strong> ${object.course_id.name}</li>
+                    <li><strong>Session:</strong> ${object.session_id.name}</li>
+                    <li><strong>Start:</strong> ${object.session_id.start_datetime}</li>
+                    <li><strong>End:</strong> ${object.session_id.end_datetime}</li>
+                    % if object.session_id.location:
+                        <li><strong>Location:</strong> ${object.session_id.location}</li>
+                    % endif
+                </ul>
+                <p>Thank you.</p>
+                ]]>
+            </field>
+        </record>
+
+        <!-- ============================================================
+             Enrollment - Manager Approved (optional step)
+        ============================================================ -->
+        <record id="mail_template_hr_training_manager_approved" model="mail.template">
+            <field name="name">Training Enrollment Manager Approved</field>
+            <field name="model_id" ref="hr_training.model_hr_training_enrollment"/>
+            <field name="subject">Manager Approved: ${object.course_id.name}</field>
+            <field name="email_from">${(user.email_formatted or '')|safe}</field>
+            <field name="email_to">${object.employee_id.work_email or ''}</field>
+            <field name="body_html" type="html">
+                <![CDATA[
+                <p>Hello ${object.employee_id.name},</p>
+                <p>Your manager has approved your training request for <strong>${object.course_id.name}</strong>.</p>
+                <p>It is now pending HR approval.</p>
+                ]]>
+            </field>
+        </record>
+
+        <!-- ============================================================
+             Approval Reminder - Manager
+        ============================================================ -->
+        <record id="mail_template_hr_training_approval_reminder_manager" model="mail.template">
+            <field name="name">Training Approval Reminder (Manager)</field>
+            <field name="model_id" ref="hr_training.model_hr_training_enrollment"/>
+            <field name="subject">Approval Needed: ${object.employee_id.name} - ${object.course_id.name}</field>
+            <field name="email_from">${(user.email_formatted or '')|safe}</field>
+            <!-- Notify employee's manager (hr.employee.parent_id) when available -->
+            <field name="email_to">${(object.employee_id.parent_id.work_email or '')}</field>
+            <field name="body_html" type="html">
+                <![CDATA[
+                <p>Hello,</p>
+                <p>
+                    A training request is awaiting your approval:
+                </p>
+                <ul>
+                    <li><strong>Employee:</strong> ${object.employee_id.name}</li>
+                    <li><strong>Course:</strong> ${object.course_id.name}</li>
+                    <li><strong>Session:</strong> ${object.session_id.name}</li>
+                    <li><strong>Start:</strong> ${object.session_id.start_datetime}</li>
+                </ul>
+                <p>Please review the request in Odoo.</p>
+                ]]>
+            </field>
+        </record>
+
+        <!-- ============================================================
+             Approval Reminder - HR
+        ============================================================ -->
+        <record id="mail_template_hr_training_approval_reminder_hr" model="mail.template">
+            <field name="name">Training Approval Reminder (HR)</field>
+            <field name="model_id" ref="hr_training.model_hr_training_enrollment"/>
+            <field name="subject">HR Approval Needed: ${object.employee_id.name} - ${object.course_id.name}</field>
+            <field name="email_from">${(user.email_formatted or '')|safe}</field>
+            <!-- Send to all users in Training Manager group via partner_ids -->
+            <field name="partner_to">${','.join([str(u.partner_id.id) for u in ctx.get('hr_training_manager_users', [])])}</field>
+            <field name="body_html" type="html">
+                <![CDATA[
+                <p>Hello,</p>
+                <p>
+                    An enrollment is awaiting HR approval:
+                </p>
+                <ul>
+                    <li><strong>Employee:</strong> ${object.employee_id.name}</li>
+                    <li><strong>Course:</strong> ${object.course_id.name}</li>
+                    <li><strong>Session:</strong> ${object.session_id.name}</li>
+                    <li><strong>Start:</strong> ${object.session_id.start_datetime}</li>
+                    <li><strong>Current state:</strong> ${object.state}</li>
+                </ul>
+                <p>Please review the request in Odoo.</p>
+                ]]>
+            </field>
+        </record>
+
+        <!-- ============================================================
+             Session Reminder - Upcoming session
+        ============================================================ -->
+        <record id="mail_template_hr_training_session_reminder" model="mail.template">
+            <field name="name">Training Session Reminder</field>
+            <field name="model_id" ref="hr_training.model_hr_training_enrollment"/>
+            <field name="subject">Reminder: Upcoming Training - ${object.course_id.name}</field>
+            <field name="email_from">${(user.email_formatted or '')|safe}</field>
+            <field name="email_to">${object.employee_id.work_email or ''}</field>
+            <field name="body_html" type="html">
+                <![CDATA[
+                <p>Hello ${object.employee_id.name},</p>
+                <p>This is a reminder for your upcoming training session:</p>
+                <ul>
+                    <li><strong>Course:</strong> ${object.course_id.name}</li>
+                    <li><strong>Session:</strong> ${object.session_id.name}</li>
+                    <li><strong>Start:</strong> ${object.session_id.start_datetime}</li>
+                    <li><strong>End:</strong> ${object.session_id.end_datetime}</li>
+                    % if object.session_id.location:
+                        <li><strong>Location:</strong> ${object.session_id.location}</li>
+                    % endif
+                </ul>
+                <p>Thank you.</p>
+                ]]>
+            </field>
+        </record>
+
+        <!-- ============================================================
+             Certificate Issued
+        ============================================================ -->
+        <record id="mail_template_hr_training_certificate_issued" model="mail.template">
+            <field name="name">Training Certificate Issued</field>
+            <field name="model_id" ref="hr_training.model_hr_training_certificate"/>
+            <field name="subject">Certificate Issued: ${object.course_id.name}</field>
+            <field name="email_from">${(user.email_formatted or '')|safe}</field>
+            <field name="email_to">${object.employee_id.work_email or ''}</field>
+            <field name="body_html" type="html">
+                <![CDATA[
+                <p>Hello ${object.employee_id.name},</p>
+                <p>
+                    Congratulations! Your training certificate has been issued for:
+                    <strong>${object.course_id.name}</strong>
+                </p>
+                <ul>
+                    <li><strong>Issue date:</strong> ${object.issue_date}</li>
+                    % if object.expiry_date:
+                        <li><strong>Expiry date:</strong> ${object.expiry_date}</li>
+                    % endif
+                </ul>
+                <p>You can view the certificate in Odoo (Training → Certificates).</p>
+                ]]>
+            </field>
+        </record>
+
+    </data>
+</odoo>

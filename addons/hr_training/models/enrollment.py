@@ -63,6 +63,18 @@ class HrTrainingEnrollment(models.Model):
         ),
     ]
 
+    def _get_mail_template(self, xmlid):
+        """Return a mail.template record for a given xmlid, or an empty recordset if missing."""
+        return self.env.ref(xmlid, raise_if_not_found=False)
+
+    def _send_mail_template(self, xmlid, records):
+        """Send the given mail template to each record (best-effort, no crash if template missing)."""
+        template = self._get_mail_template(xmlid)
+        if not template:
+            return
+        for rec in records:
+            template.send_mail(rec.id, force_send=False, raise_exception=False)
+
     @api.constrains("session_id", "employee_id")
     def _check_employee_company(self):
         for rec in self:
@@ -133,10 +145,14 @@ class HrTrainingEnrollment(models.Model):
                 continue
             rec.state = "manager_approved"
 
+        # Notify the employee that their manager has approved (best-effort)
+        self._send_mail_template("hr_training.mail_template_hr_training_manager_approved", self)
+
     def action_approve(self):
         """
         HR approval. Applies capacity checks. May move to waitlisted when full.
         """
+        approved_recs = self.env["hr.training.enrollment"]
         for rec in self:
             if rec.state not in ("requested", "manager_approved"):
                 continue
@@ -158,6 +174,11 @@ class HrTrainingEnrollment(models.Model):
                 rec.state = "approved"
                 rec.approval_user_id = self.env.user
                 rec.approval_date = fields.Datetime.now()
+                approved_recs |= rec
+
+        # Notify employee(s) of approval (best-effort)
+        if approved_recs:
+            approved_recs._send_mail_template("hr_training.mail_template_hr_training_enrollment_approved", approved_recs)
 
     def action_reject(self):
         for rec in self:
@@ -228,3 +249,55 @@ class HrTrainingEnrollment(models.Model):
             if rec.state not in ("attended", "approved"):
                 raise UserError(_("Enrollment must be attended/approved before marking failed."))
             rec.state = "failed"
+
+    def _cron_send_pending_approval_reminders(self):
+        """
+        Cron job: send reminder emails for enrollments still waiting for action.
+
+        - If course requires manager approval: state=requested -> notify employee's manager (parent employee).
+        - Otherwise: state=requested -> notify HR training manager group (via template).
+        - For manager-approved waiting HR: state=manager_approved -> notify HR training manager group.
+        """
+        Enrollment = self.env["hr.training.enrollment"].sudo()
+        pending = Enrollment.search([("state", "in", ("requested", "manager_approved"))])
+        if not pending:
+            return
+
+        # Manager reminders (requested + requires_manager_approval)
+        manager_pending = pending.filtered(lambda e: e.state == "requested" and e.course_id.requires_manager_approval)
+        if manager_pending:
+            manager_pending._send_mail_template(
+                "hr_training.mail_template_hr_training_approval_reminder_manager",
+                manager_pending,
+            )
+
+        # HR reminders (requested where no manager step OR manager_approved)
+        hr_pending = pending.filtered(lambda e: (e.state == "requested" and not e.course_id.requires_manager_approval) or e.state == "manager_approved")
+        if hr_pending:
+            hr_pending._send_mail_template(
+                "hr_training.mail_template_hr_training_approval_reminder_hr",
+                hr_pending,
+            )
+
+    def _cron_send_upcoming_session_reminders(self):
+        """
+        Cron job: send reminder emails to employees with approved enrollments
+        for sessions starting soon.
+
+        Default behavior:
+        - Remind for sessions starting within the next 7 days.
+        - Only for enrollments in state 'approved'.
+        """
+        Enrollment = self.env["hr.training.enrollment"].sudo()
+        now = fields.Datetime.now()
+        horizon = now + relativedelta(days=7)
+
+        enrollments = Enrollment.search([
+            ("state", "=", "approved"),
+            ("session_id.start_datetime", ">=", now),
+            ("session_id.start_datetime", "<=", horizon),
+        ])
+        if not enrollments:
+            return
+
+        enrollments._send_mail_template("hr_training.mail_template_hr_training_session_reminder", enrollments)

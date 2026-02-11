@@ -62,5 +62,25 @@
                   action="action_hr_training_certificate"
                   sequence="40"
                   groups="hr_training.group_training_user"/>
+
+        <menuitem id="menu_hr_training_reporting_root"
+                  name="Reporting"
+                  parent="menu_hr_training_root"
+                  sequence="60"
+                  groups="hr_training.group_training_manager"/>
+
+        <menuitem id="menu_hr_training_reporting_enrollments"
+                  name="Enrollments Analysis"
+                  parent="menu_hr_training_reporting_root"
+                  action="action_hr_training_enrollment_reporting"
+                  sequence="10"
+                  groups="hr_training.group_training_manager"/>
+
+        <menuitem id="menu_hr_training_reporting_certificates"
+                  name="Certificates Analysis"
+                  parent="menu_hr_training_reporting_root"
+                  action="action_hr_training_certificate_reporting"
+                  sequence="20"
+                  groups="hr_training.group_training_manager"/>
     </data>
 </odoo>

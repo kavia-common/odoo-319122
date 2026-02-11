@@ -40,6 +40,20 @@ class HrTrainingCertificate(models.Model):
     attachment_id = fields.Many2one("ir.attachment", string="Certificate File")
     external_reference = fields.Char()
 
+    def _get_mail_template(self, xmlid):
+        """Return a mail.template record for a given xmlid, or an empty recordset if missing."""
+        return self.env.ref(xmlid, raise_if_not_found=False)
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        """Override to send a 'certificate issued' email (best-effort)."""
+        records = super().create(vals_list)
+        template = records._get_mail_template("hr_training.mail_template_hr_training_certificate_issued")
+        if template:
+            for rec in records:
+                template.send_mail(rec.id, force_send=False, raise_exception=False)
+        return records
+
     @api.depends("employee_id", "course_id")
     def _compute_name(self):
         for rec in self:
