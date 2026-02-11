@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+        <!-- Employees (Training Users) can see only their own enrollments -->
+        <record id="rule_enrollment_employee_own" model="ir.rule">
+            <field name="name">Training enrollments: employee can read own</field>
+            <field name="model_id" ref="model_hr_training_enrollment"/>
+            <field name="domain_force">[('employee_id.user_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('hr_training.group_training_user'))]"/>
+        </record>
+
+        <!-- Instructors can see enrollments for sessions they instruct -->
+        <record id="rule_enrollment_instructor_sessions" model="ir.rule">
+            <field name="name">Training enrollments: instructor can read/write their sessions</field>
+            <field name="model_id" ref="model_hr_training_enrollment"/>
+            <field name="domain_force">[('session_id.instructor_user_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('hr_training.group_training_instructor'))]"/>
+        </record>
+
+        <!-- Training Managers can see everything -->
+        <record id="rule_enrollment_manager_all" model="ir.rule">
+            <field name="name">Training enrollments: manager all</field>
+            <field name="model_id" ref="model_hr_training_enrollment"/>
+            <field name="domain_force">[(1,'=',1)]</field>
+            <field name="groups" eval="[(4, ref('hr_training.group_training_manager'))]"/>
+        </record>
+
+        <!-- Certificates: employee can read own -->
+        <record id="rule_certificate_employee_own" model="ir.rule">
+            <field name="name">Training certificates: employee can read own</field>
+            <field name="model_id" ref="model_hr_training_certificate"/>
+            <field name="domain_force">[('employee_id.user_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('hr_training.group_training_user'))]"/>
+        </record>
+
+        <!-- Training Managers can see all certificates -->
+        <record id="rule_certificate_manager_all" model="ir.rule">
+            <field name="name">Training certificates: manager all</field>
+            <field name="model_id" ref="model_hr_training_certificate"/>
+            <field name="domain_force">[(1,'=',1)]</field>
+            <field name="groups" eval="[(4, ref('hr_training.group_training_manager'))]"/>
+        </record>
+
+        <!-- Sessions: Training users only see published/done sessions; managers see all via ACL -->
+        <record id="rule_session_user_published" model="ir.rule">
+            <field name="name">Training sessions: users see published or later</field>
+            <field name="model_id" ref="model_hr_training_session"/>
+            <field name="domain_force">[('state', 'in', ('published','in_progress','done'))]</field>
+            <field name="groups" eval="[(4, ref('hr_training.group_training_user'))]"/>
+        </record>
+    </data>
+</odoo>

@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_hr_training_session_tree" model="ir.ui.view">
+            <field name="name">hr.training.session.tree</field>
+            <field name="model">hr.training.session</field>
+            <field name="arch" type="xml">
+                <tree string="Sessions">
+                    <field name="name"/>
+                    <field name="course_id"/>
+                    <field name="start_datetime"/>
+                    <field name="end_datetime"/>
+                    <field name="state"/>
+                    <field name="capacity"/>
+                    <field name="approved_enrollment_count"/>
+                    <field name="available_seat_count" attrs="{'invisible':[('capacity','=',0)]}"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_hr_training_session_form" model="ir.ui.view">
+            <field name="name">hr.training.session.form</field>
+            <field name="model">hr.training.session</field>
+            <field name="arch" type="xml">
+                <form string="Session">
+                    <header>
+                        <button name="action_publish" type="object" string="Publish" class="btn-primary"
+                                attrs="{'invisible':[('state','!=','draft')]}"
+                                groups="hr_training.group_training_manager"/>
+                        <button name="action_start" type="object" string="Start" class="btn-primary"
+                                attrs="{'invisible':[('state','!=','published')]}"
+                                groups="hr_training.group_training_manager"/>
+                        <button name="action_done" type="object" string="Done" class="btn-primary"
+                                attrs="{'invisible':[('state','not in',('published','in_progress'))]}"
+                                groups="hr_training.group_training_manager"/>
+                        <button name="action_cancel" type="object" string="Cancel" class="btn-secondary"
+                                attrs="{'invisible':[('state','in',('cancelled','done'))]}"
+                                groups="hr_training.group_training_manager"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,published,in_progress,done,cancelled"/>
+                    </header>
+
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="course_id"/>
+                                <field name="start_datetime"/>
+                                <field name="end_datetime"/>
+                                <field name="location"/>
+                            </group>
+                            <group>
+                                <field name="capacity"/>
+                                <field name="approved_enrollment_count" readonly="1"/>
+                                <field name="available_seat_count" readonly="1" attrs="{'invisible':[('capacity','=',0)]}"/>
+                                <field name="instructor_employee_id"/>
+                                <field name="instructor_user_id"/>
+                            </group>
+                        </group>
+
+                        <notebook>
+                            <page string="Enrollments">
+                                <field name="enrollment_ids" context="{'default_session_id': active_id}">
+                                    <tree editable="bottom">
+                                        <field name="employee_id"/>
+                                        <field name="state"/>
+                                        <field name="attendance_status"/>
+                                        <field name="completion_date"/>
+                                        <field name="certificate_id"/>
+                                    </tree>
+                                </field>
+                            </page>
+                            <page string="Notes">
+                                <field name="notes"/>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <chatter/>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_hr_training_session_search" model="ir.ui.view">
+            <field name="name">hr.training.session.search</field>
+            <field name="model">hr.training.session</field>
+            <field name="arch" type="xml">
+                <search string="Sessions">
+                    <field name="name"/>
+                    <field name="course_id"/>
+                    <field name="state"/>
+                    <filter string="Published" name="published" domain="[('state','=','published')]"/>
+                    <filter string="In Progress" name="in_progress" domain="[('state','=','in_progress')]"/>
+                    <filter string="Done" name="done" domain="[('state','=','done')]"/>
+                    <group expand="0" string="Group By">
+                        <filter string="Course" name="group_course" context="{'group_by':'course_id'}"/>
+                        <filter string="State" name="group_state" context="{'group_by':'state'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+    </data>
+</odoo>

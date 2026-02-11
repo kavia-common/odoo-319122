@@ -1,0 +1,18 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_hr_training_course_manager,hr.training.course manager,model_hr_training_course,hr_training.group_training_manager,1,1,1,1
+access_hr_training_course_instructor,hr.training.course instructor,model_hr_training_course,hr_training.group_training_instructor,1,0,0,0
+access_hr_training_course_user,hr.training.course user,model_hr_training_course,hr_training.group_training_user,1,0,0,0
+
+access_hr_training_course_category_manager,hr.training.course.category manager,model_hr_training_course_category,hr_training.group_training_manager,1,1,1,1
+access_hr_training_course_category_user,hr.training.course.category user,model_hr_training_course_category,hr_training.group_training_user,1,0,0,0
+
+access_hr_training_session_manager,hr.training.session manager,model_hr_training_session,hr_training.group_training_manager,1,1,1,1
+access_hr_training_session_instructor,hr.training.session instructor,model_hr_training_session,hr_training.group_training_instructor,1,0,0,0
+access_hr_training_session_user,hr.training.session user,model_hr_training_session,hr_training.group_training_user,1,0,0,0
+
+access_hr_training_enrollment_manager,hr.training.enrollment manager,model_hr_training_enrollment,hr_training.group_training_manager,1,1,1,1
+access_hr_training_enrollment_instructor,hr.training.enrollment instructor,model_hr_training_enrollment,hr_training.group_training_instructor,1,1,0,0
+access_hr_training_enrollment_user,hr.training.enrollment user,model_hr_training_enrollment,hr_training.group_training_user,1,0,1,0
+
+access_hr_training_certificate_manager,hr.training.certificate manager,model_hr_training_certificate,hr_training.group_training_manager,1,1,1,1
+access_hr_training_certificate_user,hr.training.certificate user,model_hr_training_certificate,hr_training.group_training_user,1,0,0,0

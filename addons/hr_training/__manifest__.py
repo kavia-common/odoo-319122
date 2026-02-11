@@ -1,0 +1,28 @@
+# -*- coding: utf-8 -*-
+{
+    "name": "HR Training",
+    "summary": "Track employee training courses, sessions, enrollments and certificates",
+    "version": "17.0.1.0.0",
+    "category": "Human Resources",
+    "license": "LGPL-3",
+    "author": "Kavia",
+    "website": "https://example.com",
+    "depends": [
+        "hr",
+        "mail",
+    ],
+    "data": [
+        "security/hr_training_groups.xml",
+        "security/ir.model.access.csv",
+        "security/hr_training_record_rules.xml",
+        "data/hr_training_sequences.xml",
+        "views/hr_training_menus.xml",
+        "views/hr_training_course_views.xml",
+        "views/hr_training_session_views.xml",
+        "views/hr_training_enrollment_views.xml",
+        "views/hr_training_certificate_views.xml",
+        "views/hr_employee_views.xml",
+    ],
+    "application": True,
+    "installable": True,
+}

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_hr_training_certificate_tree" model="ir.ui.view">
+            <field name="name">hr.training.certificate.tree</field>
+            <field name="model">hr.training.certificate</field>
+            <field name="arch" type="xml">
+                <tree string="Certificates">
+                    <field name="name"/>
+                    <field name="employee_id"/>
+                    <field name="course_id"/>
+                    <field name="issue_date"/>
+                    <field name="expiry_date"/>
+                    <field name="state"/>
+                    <field name="external_reference"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_hr_training_certificate_form" model="ir.ui.view">
+            <field name="name">hr.training.certificate.form</field>
+            <field name="model">hr.training.certificate</field>
+            <field name="arch" type="xml">
+                <form string="Certificate">
+                    <header>
+                        <button name="action_revoke" type="object" string="Revoke" class="btn-secondary"
+                                attrs="{'invisible':[('state','=','revoked')]}"
+                                groups="hr_training.group_training_manager"/>
+                        <field name="state" widget="statusbar" statusbar_visible="active,expired,revoked"/>
+                    </header>
+
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name" readonly="1"/>
+                                <field name="employee_id"/>
+                                <field name="course_id"/>
+                                <field name="enrollment_id"/>
+                            </group>
+                            <group>
+                                <field name="issue_date"/>
+                                <field name="expiry_date" readonly="1"/>
+                                <field name="attachment_id"/>
+                                <field name="external_reference"/>
+                            </group>
+                        </group>
+
+                        <group string="Revocation" groups="hr_training.group_training_manager">
+                            <field name="revoked_date" readonly="1"/>
+                            <field name="revoked_by" readonly="1"/>
+                            <field name="revoked_reason"/>
+                        </group>
+                    </sheet>
+                    <chatter/>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_hr_training_certificate_search" model="ir.ui.view">
+            <field name="name">hr.training.certificate.search</field>
+            <field name="model">hr.training.certificate</field>
+            <field name="arch" type="xml">
+                <search string="Certificates">
+                    <field name="employee_id"/>
+                    <field name="course_id"/>
+                    <field name="state"/>
+                    <filter string="Active" name="active" domain="[('state','=','active')]"/>
+                    <filter string="Expiring Soon" name="expiring"
+                            domain="[('state','=','active'),('expiry_date','!=',False),('expiry_date','&lt;=', (context_today() + relativedelta(days=30)).strftime('%%Y-%%m-%%d'))]"/>
+                    <group expand="0" string="Group By">
+                        <filter string="Course" name="group_course" context="{'group_by':'course_id'}"/>
+                        <filter string="State" name="group_state" context="{'group_by':'state'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+    </data>
+</odoo>

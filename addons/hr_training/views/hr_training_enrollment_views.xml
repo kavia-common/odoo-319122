@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_hr_training_enrollment_tree" model="ir.ui.view">
+            <field name="name">hr.training.enrollment.tree</field>
+            <field name="model">hr.training.enrollment</field>
+            <field name="arch" type="xml">
+                <tree string="Enrollments">
+                    <field name="request_date"/>
+                    <field name="session_id"/>
+                    <field name="course_id"/>
+                    <field name="employee_id"/>
+                    <field name="state"/>
+                    <field name="attendance_status"/>
+                    <field name="completion_date"/>
+                    <field name="certificate_id"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_hr_training_enrollment_form" model="ir.ui.view">
+            <field name="name">hr.training.enrollment.form</field>
+            <field name="model">hr.training.enrollment</field>
+            <field name="arch" type="xml">
+                <form string="Enrollment">
+                    <header>
+                        <button name="action_manager_approve" type="object" string="Manager Approve" class="btn-primary"
+                                attrs="{'invisible':[('state','!=','requested'),('course_id.requires_manager_approval','=',False)]}"/>
+                        <button name="action_approve" type="object" string="Approve" class="btn-primary"
+                                attrs="{'invisible':[('state','not in',('requested','manager_approved'))]}"
+                                groups="hr_training.group_training_manager"/>
+                        <button name="action_reject" type="object" string="Reject" class="btn-secondary"
+                                attrs="{'invisible':[('state','in',('rejected','cancelled','completed'))]}"
+                                groups="hr_training.group_training_manager"/>
+                        <button name="action_cancel" type="object" string="Cancel" class="btn-secondary"
+                                attrs="{'invisible':[('state','in',('cancelled','completed','rejected'))]}"/>
+                        <button name="action_mark_completed" type="object" string="Mark Completed" class="btn-primary"
+                                attrs="{'invisible':[('state','not in',('approved','attended'))]}"
+                                groups="hr_training.group_training_instructor,hr_training.group_training_manager"/>
+                        <button name="action_mark_failed" type="object" string="Mark Failed" class="btn-secondary"
+                                attrs="{'invisible':[('state','not in',('approved','attended'))]}"
+                                groups="hr_training.group_training_instructor,hr_training.group_training_manager"/>
+                        <field name="state" widget="statusbar"
+                               statusbar_visible="requested,manager_approved,approved,waitlisted,attended,completed,failed,rejected,cancelled"/>
+                    </header>
+
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="session_id"/>
+                                <field name="course_id" readonly="1"/>
+                                <field name="employee_id"/>
+                            </group>
+                            <group>
+                                <field name="request_date" readonly="1"/>
+                                <field name="approval_user_id" readonly="1"/>
+                                <field name="approval_date" readonly="1"/>
+                                <field name="certificate_id" readonly="1"/>
+                            </group>
+                        </group>
+
+                        <group string="Attendance" groups="hr_training.group_training_instructor,hr_training.group_training_manager">
+                            <field name="attendance_status"/>
+                            <field name="attendance_marked_by" readonly="1"/>
+                            <field name="attendance_marked_on" readonly="1"/>
+                        </group>
+
+                        <group string="Completion">
+                            <field name="completion_date" readonly="1"/>
+                            <field name="score"/>
+                        </group>
+
+                        <notebook>
+                            <page string="Notes">
+                                <field name="notes"/>
+                            </page>
+                            <page string="Reject/Cancel Reasons" groups="hr_training.group_training_manager">
+                                <field name="reason_reject"/>
+                                <field name="reason_cancel"/>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <chatter/>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_hr_training_enrollment_search" model="ir.ui.view">
+            <field name="name">hr.training.enrollment.search</field>
+            <field name="model">hr.training.enrollment</field>
+            <field name="arch" type="xml">
+                <search string="Enrollments">
+                    <field name="employee_id"/>
+                    <field name="session_id"/>
+                    <field name="course_id"/>
+                    <field name="state"/>
+                    <filter string="Requested" name="requested" domain="[('state','=','requested')]"/>
+                    <filter string="Approved" name="approved" domain="[('state','=','approved')]"/>
+                    <filter string="Waitlisted" name="waitlisted" domain="[('state','=','waitlisted')]"/>
+                    <filter string="Completed" name="completed" domain="[('state','=','completed')]"/>
+                    <group expand="0" string="Group By">
+                        <filter string="Course" name="group_course" context="{'group_by':'course_id'}"/>
+                        <filter string="Session" name="group_session" context="{'group_by':'session_id'}"/>
+                        <filter string="State" name="group_state" context="{'group_by':'state'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+    </data>
+</odoo>

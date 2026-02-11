@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_hr_employee_form_inherit_training" model="ir.ui.view">
+            <field name="name">hr.employee.form.inherit.training</field>
+            <field name="model">hr.employee</field>
+            <field name="inherit_id" ref="hr.view_employee_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//div[@name='button_box']" position="inside">
+                    <button type="object"
+                            name="action_open_training_enrollments"
+                            class="oe_stat_button"
+                            icon="fa-graduation-cap"
+                            groups="hr_training.group_training_user">
+                        <field name="training_enrollment_count" widget="statinfo" string="Trainings"/>
+                    </button>
+                    <button type="object"
+                            name="action_open_training_certificates"
+                            class="oe_stat_button"
+                            icon="fa-certificate"
+                            groups="hr_training.group_training_user">
+                        <field name="training_certificate_count" widget="statinfo" string="Certificates"/>
+                    </button>
+                </xpath>
+
+                <xpath expr="//notebook" position="inside">
+                    <page string="Training" groups="hr_training.group_training_user">
+                        <group>
+                            <field name="training_certificate_ids" readonly="1">
+                                <tree>
+                                    <field name="course_id"/>
+                                    <field name="issue_date"/>
+                                    <field name="expiry_date"/>
+                                    <field name="state"/>
+                                </tree>
+                            </field>
+                        </group>
+                        <group>
+                            <field name="training_enrollment_ids" readonly="1">
+                                <tree>
+                                    <field name="session_id"/>
+                                    <field name="course_id"/>
+                                    <field name="state"/>
+                                    <field name="attendance_status"/>
+                                    <field name="completion_date"/>
+                                </tree>
+                            </field>
+                        </group>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

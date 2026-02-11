@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_hr_training_course_tree" model="ir.ui.view">
+            <field name="name">hr.training.course.tree</field>
+            <field name="model">hr.training.course</field>
+            <field name="arch" type="xml">
+                <tree string="Courses">
+                    <field name="name"/>
+                    <field name="code"/>
+                    <field name="category_id"/>
+                    <field name="is_mandatory"/>
+                    <field name="evaluation_mode"/>
+                    <field name="validity_months"/>
+                    <field name="active"/>
+                    <field name="company_id" groups="base.group_multi_company"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_hr_training_course_form" model="ir.ui.view">
+            <field name="name">hr.training.course.form</field>
+            <field name="model">hr.training.course</field>
+            <field name="arch" type="xml">
+                <form string="Course">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name"/>
+                                <field name="code"/>
+                                <field name="category_id"/>
+                                <field name="company_id" groups="base.group_multi_company"/>
+                            </group>
+                            <group>
+                                <field name="active"/>
+                                <field name="is_mandatory"/>
+                                <field name="issues_certificate"/>
+                                <field name="validity_months" attrs="{'invisible': [('issues_certificate','=',False)]}"/>
+                            </group>
+                        </group>
+
+                        <group string="Enrollment Policy">
+                            <field name="allow_self_enroll"/>
+                            <field name="requires_manager_approval"/>
+                            <field name="require_attendance"/>
+                            <field name="evaluation_mode"/>
+                        </group>
+
+                        <group string="Prerequisites">
+                            <field name="prerequisite_course_ids" widget="many2many_tags"/>
+                        </group>
+
+                        <notebook>
+                            <page string="Description">
+                                <field name="description"/>
+                            </page>
+                            <page string="Sessions">
+                                <field name="session_ids" readonly="1">
+                                    <tree>
+                                        <field name="name"/>
+                                        <field name="start_datetime"/>
+                                        <field name="end_datetime"/>
+                                        <field name="state"/>
+                                        <field name="capacity"/>
+                                        <field name="approved_enrollment_count"/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <chatter/>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_hr_training_course_search" model="ir.ui.view">
+            <field name="name">hr.training.course.search</field>
+            <field name="model">hr.training.course</field>
+            <field name="arch" type="xml">
+                <search string="Courses">
+                    <field name="name"/>
+                    <field name="code"/>
+                    <field name="category_id"/>
+                    <filter string="Mandatory" name="mandatory" domain="[('is_mandatory','=',True)]"/>
+                    <group expand="0" string="Group By">
+                        <filter string="Category" name="group_category" context="{'group_by':'category_id'}"/>
+                        <filter string="Company" name="group_company" context="{'group_by':'company_id'}" groups="base.group_multi_company"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+    </data>
+</odoo>

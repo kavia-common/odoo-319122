@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <menuitem id="menu_hr_training_root"
+                  name="Training"
+                  parent="hr.menu_hr_root"
+                  sequence="90"
+                  groups="hr_training.group_training_user"/>
+
+        <record id="action_hr_training_course" model="ir.actions.act_window">
+            <field name="name">Courses</field>
+            <field name="res_model">hr.training.course</field>
+            <field name="view_mode">tree,form</field>
+            <field name="context">{}</field>
+        </record>
+
+        <record id="action_hr_training_session" model="ir.actions.act_window">
+            <field name="name">Sessions</field>
+            <field name="res_model">hr.training.session</field>
+            <field name="view_mode">tree,form</field>
+            <field name="context">{}</field>
+        </record>
+
+        <record id="action_hr_training_enrollment" model="ir.actions.act_window">
+            <field name="name">Enrollments</field>
+            <field name="res_model">hr.training.enrollment</field>
+            <field name="view_mode">tree,form</field>
+            <field name="context">{}</field>
+        </record>
+
+        <record id="action_hr_training_certificate" model="ir.actions.act_window">
+            <field name="name">Certificates</field>
+            <field name="res_model">hr.training.certificate</field>
+            <field name="view_mode">tree,form</field>
+            <field name="context">{}</field>
+        </record>
+
+        <menuitem id="menu_hr_training_courses"
+                  name="Courses"
+                  parent="menu_hr_training_root"
+                  action="action_hr_training_course"
+                  sequence="10"
+                  groups="hr_training.group_training_user"/>
+
+        <menuitem id="menu_hr_training_sessions"
+                  name="Sessions"
+                  parent="menu_hr_training_root"
+                  action="action_hr_training_session"
+                  sequence="20"
+                  groups="hr_training.group_training_user"/>
+
+        <menuitem id="menu_hr_training_enrollments"
+                  name="Enrollments"
+                  parent="menu_hr_training_root"
+                  action="action_hr_training_enrollment"
+                  sequence="30"
+                  groups="hr_training.group_training_user"/>
+
+        <menuitem id="menu_hr_training_certificates"
+                  name="Certificates"
+                  parent="menu_hr_training_root"
+                  action="action_hr_training_certificate"
+                  sequence="40"
+                  groups="hr_training.group_training_user"/>
+    </data>
+</odoo>
